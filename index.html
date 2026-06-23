@@ -78,7 +78,7 @@
                 <div class="absolute -bottom-5 -left-5 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
                 <div class="relative z-10 text-center">
                     <p class="text-indigo-200 text-sm font-medium mb-2 tracking-wider">대전법동중학교</p>
-                    <h1 class="text-3xl font-bold leading-tight mb-4">2026학년도<br>AI 디지털 선도학교 현장연수</h1>
+                    <h1 class="text-[1.25rem] sm:text-2xl font-bold leading-snug mb-4 tracking-tight">2026학년도<br>AI 디지털 선도학교 현장연수</h1>
                     <div class="inline-flex flex-col items-center bg-indigo-800 bg-opacity-40 rounded-2xl p-3 border border-indigo-500 shadow-inner w-full max-w-xs mx-auto">
                         <span class="text-sm font-medium"><i class="fa-regular fa-calendar-days text-indigo-300 mr-2 w-4"></i>7. 3.(금) ~ 7. 4.(토)</span>
                         <span class="text-sm font-medium mt-1"><i class="fa-solid fa-location-dot text-indigo-300 mr-2 w-4"></i>서울 종로 & 대학로 일대</span>
@@ -777,7 +777,122 @@
         </div>
     </div>
 
-    <!-- 클라우드 연동(Firebase) 및 UI 스크립트 모듈 -->
+    <!-- UI 전용 일반 스크립트 (클릭 이벤트 등) -->
+    <script>
+        // 탭 전환
+        function switchTab(tabName) {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + tabName).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-600');
+                btn.classList.add('text-slate-400');
+                btn.querySelector('span').classList.remove('font-bold');
+                btn.querySelector('span').classList.add('font-medium');
+            });
+            
+            const activeTab = document.getElementById('tab-' + tabName);
+            if(activeTab) {
+                activeTab.classList.remove('text-slate-400');
+                activeTab.classList.add('text-indigo-600');
+                activeTab.querySelector('span').classList.remove('font-medium');
+                activeTab.querySelector('span').classList.add('font-bold');
+            }
+            document.querySelector('.content-area').scrollTop = 0;
+        }
+
+        // 아코디언 열기/닫기
+        function toggleAccordion(button) {
+            const content = button.nextElementSibling;
+            if (!button.classList.contains('active-btn')) {
+                button.classList.add('active-btn', 'border-blue-300', 'bg-blue-50');
+                button.classList.remove('bg-white');
+                content.classList.add('active');
+            } else {
+                button.classList.remove('active-btn', 'border-blue-300', 'bg-blue-50');
+                button.classList.add('bg-white');
+                content.classList.remove('active');
+            }
+        }
+
+        // 가로 슬라이더 스크롤
+        function scrollSlider(sliderId, direction) {
+            const slider = document.getElementById(sliderId);
+            if (slider) {
+                const scrollAmount = slider.clientWidth * 0.85; 
+                slider.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        // 날짜 포맷
+        function formatDateTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${month}월 ${day}일 ${hours}:${minutes}`;
+        }
+
+        // 사진 모달 열기
+        function openModal(imgSrc, name, timestamp) {
+            const modal = document.getElementById('photo-modal');
+            document.getElementById('modal-img').src = imgSrc;
+            
+            if (timestamp) {
+                document.getElementById('modal-uploader').innerHTML = `<i class="fa-solid fa-camera mr-2 text-amber-400"></i>${name || '익명'} 님의 사진`;
+                document.getElementById('modal-date').innerText = formatDateTime(timestamp) + ' 업로드 됨';
+                document.getElementById('modal-date').style.display = 'block';
+            } else {
+                document.getElementById('modal-uploader').innerHTML = `<i class="fa-solid fa-circle-info mr-2 text-blue-400"></i>${name || '상세 정보'}`;
+                document.getElementById('modal-date').style.display = 'none';
+            }
+            modal.classList.add('show');
+        }
+
+        // 사진 모달 닫기
+        function closeModal() {
+            document.getElementById('photo-modal').classList.remove('show');
+        }
+
+        // 사진 올리기 버튼 클릭 시
+        function triggerFileInput() {
+            const savedName = localStorage.getItem('uploaderName');
+            if (!savedName) {
+                document.getElementById('name-prompt-modal').classList.add('show');
+                setTimeout(() => document.getElementById('uploader-name-input').focus(), 100);
+            } else {
+                document.getElementById('file-input').click();
+            }
+        }
+
+        // 이름 입력 확인
+        function confirmNameInput() {
+            const nameInput = document.getElementById('uploader-name-input').value.trim();
+            if (nameInput === '') {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+            localStorage.setItem('uploaderName', nameInput);
+            document.getElementById('name-prompt-modal').classList.remove('show');
+            document.getElementById('file-input').click();
+        }
+
+        // 이름 입력 취소
+        function cancelNameInput() {
+            document.getElementById('name-prompt-modal').classList.remove('show');
+        }
+
+        // 이름 입력창 엔터키 지원
+        document.getElementById('uploader-name-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                confirmNameInput();
+            }
+        });
+    </script>
+
+    <!-- 클라우드 연동(Firebase) 스크립트 모듈 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -789,10 +904,13 @@
         let app, auth, db, currentUser;
 
         try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (error) { console.error("Firebase 에러:", error); }
+            // 깃허브에 파이어베이스 설정이 없어도 에러가 화면을 멈추지 않도록 처리
+            if (Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+            }
+        } catch (error) { console.warn("Firebase 초기화 안됨 (설정값 필요):", error); }
 
         const initAuth = async () => {
             if (!auth) return;
@@ -800,31 +918,24 @@
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else { await signInAnonymously(auth); }
-            } catch (error) { console.error("인증 에러:", error); }
+            } catch (error) { console.warn("인증 에러:", error); }
         };
         initAuth();
 
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                const uploadBtn = document.getElementById('upload-btn-container');
-                uploadBtn.classList.remove('opacity-50', 'pointer-events-none');
-                document.getElementById('upload-label-text').innerText = "사진 올리기";
-                loadRealtimeGallery();
-            }
-        });
-
-        function formatDateTime(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            return `${month}월 ${day}일 ${hours}:${minutes}`;
+        if (auth) {
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    const uploadBtn = document.getElementById('upload-btn-container');
+                    uploadBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    document.getElementById('upload-label-text').innerText = "사진 올리기";
+                    loadRealtimeGallery();
+                }
+            });
         }
 
         function loadRealtimeGallery() {
+            if (!db) return;
             const galleryRef = collection(db, 'artifacts', appId, 'public', 'data', 'gallery');
             onSnapshot(galleryRef, (snapshot) => {
                 const photos = [];
@@ -852,7 +963,7 @@
             photos.forEach(photo => {
                 const div = document.createElement('div');
                 div.onclick = () => openModal(photo.imageUrl, photo.uploaderName, photo.timestamp);
-                div.className = 'photo-item aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 shadow-sm border border-slate-100 group';
+                div.className = 'photo-item aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 shadow-sm border border-slate-100 group cursor-pointer';
                 
                 const img = document.createElement('img');
                 img.src = photo.imageUrl;
@@ -889,38 +1000,13 @@
             reader.readAsDataURL(file);
         }
 
-        // ==========================================
-        // 글로벌 함수 설정
-        // ==========================================
-        window.triggerFileInput = function() {
-            const savedName = localStorage.getItem('uploaderName');
-            if (!savedName) {
-                document.getElementById('name-prompt-modal').classList.add('show');
-                setTimeout(() => document.getElementById('uploader-name-input').focus(), 100);
-            } else {
-                document.getElementById('file-input').click();
-            }
-        };
-
-        window.confirmNameInput = function() {
-            const nameInput = document.getElementById('uploader-name-input').value.trim();
-            if (nameInput === '') {
-                // 진동 효과 대신 CSS 애니메이션을 줄 수도 있으나 간단히 alert 처리
-                alert('이름을 입력해주세요.');
-                return;
-            }
-            localStorage.setItem('uploaderName', nameInput);
-            document.getElementById('name-prompt-modal').classList.remove('show');
-            document.getElementById('file-input').click();
-        };
-
-        window.cancelNameInput = function() {
-            document.getElementById('name-prompt-modal').classList.remove('show');
-        };
-
+        // 파일 선택 로직 (전역 접근 가능하게 할당)
         window.processFileSelection = async function(event) {
             const file = event.target.files[0];
-            if (!file || !currentUser) return;
+            if (!file || !currentUser || !db) {
+                if (!db) alert('클라우드 저장소가 아직 연결되지 않았습니다. (Firebase 설정 필요)');
+                return;
+            }
             
             const uploaderName = localStorage.getItem('uploaderName') || '익명';
 
@@ -954,81 +1040,6 @@
                 }
             });
         };
-
-        window.openModal = function(imgSrc, name, timestamp) {
-            const modal = document.getElementById('photo-modal');
-            document.getElementById('modal-img').src = imgSrc;
-            
-            // timestamp 유무에 따라 갤러리 사진인지, 일정 안내 사진인지 구분
-            if (timestamp) {
-                document.getElementById('modal-uploader').innerHTML = `<i class="fa-solid fa-camera mr-2 text-amber-400"></i>${name || '익명'} 님의 사진`;
-                document.getElementById('modal-date').innerText = formatDateTime(timestamp) + ' 업로드 됨';
-                document.getElementById('modal-date').style.display = 'block';
-            } else {
-                document.getElementById('modal-uploader').innerHTML = `<i class="fa-solid fa-circle-info mr-2 text-blue-400"></i>${name || '상세 정보'}`;
-                document.getElementById('modal-date').style.display = 'none';
-            }
-            
-            modal.classList.add('show');
-        };
-
-        window.closeModal = function() {
-            document.getElementById('photo-modal').classList.remove('show');
-        };
-
-        window.switchTab = function(tabName) {
-            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + tabName).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-indigo-600');
-                btn.classList.add('text-slate-400');
-                btn.querySelector('span').classList.remove('font-bold');
-                btn.querySelector('span').classList.add('font-medium');
-            });
-            
-            const activeTab = document.getElementById('tab-' + tabName);
-            if(activeTab) {
-                activeTab.classList.remove('text-slate-400');
-                activeTab.classList.add('text-indigo-600');
-                activeTab.querySelector('span').classList.remove('font-medium');
-                activeTab.querySelector('span').classList.add('font-bold');
-            }
-            document.querySelector('.content-area').scrollTop = 0;
-        };
-
-        // 슬라이더 좌우 스크롤 함수
-        window.scrollSlider = function(sliderId, direction) {
-            const slider = document.getElementById(sliderId);
-            if (slider) {
-                // 한 칸 이동할 너비 계산 (아이템 너비 + gap)
-                const scrollAmount = slider.clientWidth * 0.85; 
-                slider.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-            }
-        };
-
-        window.toggleAccordion = function(button) {
-            const content = button.nextElementSibling;
-            if (!button.classList.contains('active-btn')) {
-                // 닫힌 것을 열기
-                // 선택사항: 다른 열려있는 아코디언을 자동으로 닫고 싶다면 여기서 처리
-                button.classList.add('active-btn', 'border-blue-300', 'bg-blue-50');
-                button.classList.remove('bg-white');
-                content.classList.add('active');
-            } else {
-                // 열린 것을 닫기
-                button.classList.remove('active-btn', 'border-blue-300', 'bg-blue-50');
-                button.classList.add('bg-white');
-                content.classList.remove('active');
-            }
-        };
-
-        // 이름 입력창에서 엔터키 누르면 바로 확인되도록
-        document.getElementById('uploader-name-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                confirmNameInput();
-            }
-        });
     </script>
 </body>
 </html>
