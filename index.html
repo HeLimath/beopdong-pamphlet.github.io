@@ -321,7 +321,7 @@
                     </div>
 
                     <!-- 2일차 일정 2 -->
-                    <div class="relative pl-12 mb-4">
+                                        <div class="relative pl-12 mb-4">
                         <div class="absolute left-3.5 top-5 w-2.5 h-2.5 rounded-full bg-seoul-green -translate-x-1/2 shadow-[0_0_0_4px_#F8F6F0]"></div>
                         <button class="accordion-btn w-full text-left bg-white p-4 rounded-xl shadow-sm border border-seoul-line active:scale-[0.99] transition-transform" onclick="toggleAccordion(this)">
                             <div class="flex justify-between items-start">
@@ -335,7 +335,16 @@
                         <div class="accordion-content bg-white rounded-b-xl border-x border-b border-seoul-line -mt-2 pt-2 px-4">
                             <div class="py-4 border-t border-seoul-line mt-2 text-sm text-gray-600 space-y-2">
                                 <p><i class="fa-solid fa-users text-seoul-charcoal w-5 text-center"></i> <strong>그룹구성:</strong> 추후 안내 (개인 이동 시 연락 필수)</p>
-                                <p><i class="fa-solid fa-bus text-seoul-green w-5 text-center"></i> <strong>이동지원:</strong> 경복궁 인근 버스 이동 (09:00~13:30)</p>
+                                <div>
+                                    <p><i class="fa-solid fa-bus text-seoul-green w-5 text-center"></i> <strong>이동지원:</strong> 경복궁 인근 버스 이동 (09:00~13:30)</p>
+                                    <div class="ml-5 mt-2 bg-[#FFF5F3] p-2.5 rounded-lg border border-orange-100 shadow-sm">
+                                        <p class="text-[12px] font-bold text-seoul-red mb-1.5 flex items-center"><i class="fa-solid fa-circle-exclamation mr-1.5"></i>복귀 시 탑승 안내</p>
+                                        <div class="text-seoul-charcoal font-bold text-[12px] space-y-1 ml-1">
+                                            <p>• 탑승 시간: <span class="text-seoul-red text-[13px]">13:30</span></p>
+                                            <p>• 탑승 장소: <span class="text-seoul-red">하차장소와 동일</span></p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <p><i class="fa-solid fa-sack-dollar text-seoul-red w-5 text-center"></i> <strong>활동비:</strong> 개인별 활동비 지급</p>
                                 
                                 <div class="bg-[#F0F7F3] p-3 rounded-lg border border-emerald-100 mt-3 text-xs shadow-sm">
@@ -407,7 +416,7 @@
                         <div class="text-center">
                             <p class="text-xs font-bold text-seoul-green mb-1 bg-white border border-emerald-100 inline-block px-2 py-0.5 rounded-full">서울 ➡️ 대전</p>
                             <p class="text-[14px] font-bold text-seoul-charcoal">7월 4일(토) 오후 <span class="text-seoul-green text-lg">14:00</span> 출발</p>
-                            
+                            <p class="text-[13px] font-bold text-seoul-charcoal mt-1.5 bg-[#F0F7F3] inline-block px-3 py-1 rounded-lg border border-emerald-100"><i class="fa-solid fa-location-dot text-seoul-green mr-1.5"></i>호텔 앞 로비</p>
                         </div>
                     </div>
                     <ul class="text-[13px] text-gray-600 list-disc ml-5">
