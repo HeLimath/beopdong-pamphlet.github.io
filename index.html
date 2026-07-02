@@ -2,7 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- user-scalable=no와 maximum-scale 설정을 제거하여 휴대폰의 글씨 크기 설정 및 사용자 화면 확대가 자유롭게 작동하도록 개선합니다. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026학년도 교사 연찬회</title>
     
     <!-- 모바일 홈 화면 추가 시 나타날 아이콘 설정 -->
@@ -44,14 +45,18 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
+            /* 휴대폰 시스템의 텍스트 크기 설정을 브라우저가 자동 반영하도록 허용합니다. */
+            -webkit-text-size-adjust: auto;
+            -ms-text-size-adjust: auto;
         }
         
         .page-view { display: none; animation: fadeIn 0.3s ease-in-out; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* 글씨가 커질 수 있으므로 고정높이(max-height) 여유 폭을 확보합니다. */
         .accordion-content { max-height: 0; overflow: hidden; transition: all 0.3s ease-out; opacity: 0; }
-        .accordion-content.active { max-height: 1000px; opacity: 1; padding-top: 0.5rem; padding-bottom: 1rem; }
+        .accordion-content.active { max-height: 2000px; opacity: 1; padding-top: 0.5rem; padding-bottom: 1rem; }
         .icon-rotate { transition: transform 0.3s ease; }
         .active-btn .icon-rotate { transform: rotate(180deg); }
         
@@ -66,6 +71,59 @@
         }
         #photo-modal.show { display: flex; opacity: 1; }
         #photo-modal img { max-width: 95%; max-height: 80vh; border-radius: 0.75rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+
+
+        /* 사용자가 앱 안에서 바로 글씨 크기를 조절할 수 있도록 하는 설정 */
+        :root { --app-font-scale: 1; }
+        body[data-font-scale] { font-size: calc(16px * var(--app-font-scale)); }
+        body[data-font-scale] .text-\[9px\] { font-size: calc(9px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[10px\] { font-size: calc(10px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[11px\] { font-size: calc(11px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[12px\] { font-size: calc(12px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[13px\] { font-size: calc(13px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[14px\] { font-size: calc(14px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[15px\] { font-size: calc(15px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[16px\] { font-size: calc(16px * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[1\.1rem\] { font-size: calc(1.1rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-\[1\.25rem\] { font-size: calc(1.25rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-xs { font-size: calc(0.75rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-sm { font-size: calc(0.875rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-base { font-size: calc(1rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-lg { font-size: calc(1.125rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-xl { font-size: calc(1.25rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-2xl { font-size: calc(1.5rem * var(--app-font-scale)) !important; }
+        body[data-font-scale] .text-4xl { font-size: calc(2.25rem * var(--app-font-scale)) !important; }
+
+        #font-size-control {
+            bottom: calc(5.15rem + env(safe-area-inset-bottom));
+            right: 0;
+            transform: translateX(calc(100% - 3.25rem));
+            transition: transform 0.28s ease;
+        }
+        #font-size-control.open { transform: translateX(0); }
+        #font-size-control .font-toggle {
+            width: 3.25rem;
+            min-height: 3.25rem;
+            border-radius: 1rem 0 0 1rem;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        }
+        #font-size-control .font-panel {
+            width: 15.5rem;
+            border-radius: 1rem 0 0 1rem;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        }
+        #font-size-control .font-toggle-icon {
+            transition: transform 0.28s ease;
+        }
+        #font-size-control.open .font-toggle-icon { transform: rotate(180deg); }
+        #font-size-control .font-toggle-label {
+            writing-mode: vertical-rl;
+            line-height: 1;
+        }
+
+        #font-size-range {
+            accent-color: #E25540;
+        }
     </style>
 </head>
 <body class="antialiased pb-20"> <!-- pb-20: 하단 고정 바 공간 -->
@@ -467,7 +525,7 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- 3. 그룹 안내 화면 (새로 추가됨) -->
+        <!-- 3. 그룹 안내 화면 -->
         <!-- ========================================== -->
         <section id="view-group" class="page-view">
             <div class="bg-white p-4 sticky top-0 z-20 border-b border-seoul-line shadow-sm flex items-center justify-center">
@@ -481,7 +539,7 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-seoul-line">
                     <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
                         <h3 class="font-bold text-seoul-red text-[16px]"><i class="fa-solid fa-users mr-2 opacity-80"></i>로봇 인공지능 과학관 투어</h3>
-                        <span class="bg-[#FFF5F3] text-seoul-red text-[11px] font-bold px-2.5 py-1 rounded-full border border-orange-100 shadow-sm"><i class="fa-solid fa-crown mr-1 text-amber-500"></i>신보라</span></span>
+                        <span class="bg-[#FFF5F3] text-seoul-red text-[11px] font-bold px-2.5 py-1 rounded-full border border-orange-100 shadow-sm"><i class="fa-solid fa-crown mr-1 text-amber-500"></i>신보라</span>
                     </div>
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-3 text-[12px] space-y-1.5">
                         <p class="flex items-start text-gray-700"><i class="fa-solid fa-location-dot mt-[3px] w-4 text-seoul-red text-center mr-1.5"></i> <span class="font-bold mr-1">장소:</span>서울 로봇 인공지능 과학관(창동)</p>
@@ -515,7 +573,6 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-seoul-line">
                     <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
                         <h3 class="font-bold text-amber-600 text-[16px]"><i class="fa-solid fa-users mr-2 opacity-80"></i>자유 투어: 호텔 버스 탑승</h3>
-
                     </div>
                     <!-- 명단 리스트 및 입력창 -->
                     <div id="list-C그룹" class="flex flex-wrap gap-2 mb-3 empty:hidden"></div>
@@ -529,7 +586,6 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-seoul-line">
                     <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
                         <h3 class="font-bold text-blue-600 text-[16px]"><i class="fa-solid fa-users mr-2 opacity-80"></i>자유 투어: DDP 버스 탑승</h3>
-
                     </div>
                     <!-- 명단 리스트 및 입력창 -->
                     <div id="list-D그룹" class="flex flex-wrap gap-2 mb-3 empty:hidden"></div>
@@ -542,7 +598,7 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- 4. 상세 안내 화면 (누락본 복구) -->
+        <!-- 4. 상세 안내 화면 -->
         <!-- ========================================== -->
         <section id="view-detail" class="page-view">
             <div class="bg-white p-4 sticky top-0 z-20 border-b border-seoul-line shadow-sm flex items-center justify-center">
@@ -800,7 +856,7 @@
             </div>
         </section>
 
-        <!-- 푸터 (Footer) 추가 -->
+        <!-- 푸터 (Footer) -->
         <footer class="pt-6 pb-8 px-6 text-center">
             <div class="inline-block border-t border-seoul-line pt-5 w-[80%] mx-auto">
                 <p class="text-[11px] font-bold text-gray-500 tracking-wide mb-1">
@@ -814,7 +870,27 @@
 
     </div>
 
-    <!-- 하단에 딱 붙는 안정적인 네비게이션 탭 바 (그룹 탭 추가됨) -->
+
+    <!-- 글씨 크기 조절 패널: 오른쪽 탭을 누르면 아코디언처럼 펼쳐짐 -->
+    <div id="font-size-control" class="fixed z-[90] flex items-stretch">
+        <button type="button" id="font-size-toggle" onclick="toggleFontSizeControl()" aria-label="글씨 크기 조절 패널 열기" aria-expanded="false" class="font-toggle bg-seoul-red text-white border-y border-l border-seoul-red flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform">
+            <i class="fa-solid fa-chevron-left font-toggle-icon text-[11px]"></i>
+            <span class="font-toggle-label text-[10px] font-black tracking-tight">글씨</span>
+            <span class="text-[13px] font-black leading-none">A</span>
+        </button>
+
+        <div class="font-panel bg-white/95 border border-seoul-line backdrop-blur-md p-2 flex items-center gap-2">
+            <button type="button" onclick="changeFontScale(-0.05)" aria-label="글씨 작게" class="w-9 h-9 rounded-xl bg-gray-100 text-seoul-charcoal font-black text-sm active:scale-95 transition-transform">A-</button>
+            <div class="flex flex-col items-center justify-center gap-1">
+                <label for="font-size-range" class="text-[10px] font-bold text-gray-500 leading-none">글씨 크기</label>
+                <input id="font-size-range" type="range" min="90" max="140" step="5" value="100" oninput="setFontScalePercent(this.value)" class="w-24 h-5 cursor-pointer">
+            </div>
+            <button type="button" onclick="changeFontScale(0.05)" aria-label="글씨 크게" class="w-9 h-9 rounded-xl bg-seoul-red text-white font-black text-sm active:scale-95 transition-transform">A+</button>
+            <button type="button" onclick="resetFontScale()" id="font-size-value" aria-label="글씨 크기 기본값으로" class="min-w-[48px] h-9 px-2 rounded-xl bg-[#FFF5F3] text-seoul-red font-black text-[12px] active:scale-95 transition-transform">100%</button>
+        </div>
+    </div>
+
+    <!-- 하단에 딱 붙는 안정적인 네비게이션 탭 바 -->
     <nav class="bg-white border-t border-gray-200 fixed bottom-0 left-0 right-0 w-full z-50 px-1 pb-safe shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.05)]">
         <div class="max-w-md mx-auto flex justify-between">
             <button onclick="switchTab('home')" id="tab-home" class="nav-btn active flex-1 py-3 flex flex-col items-center justify-center text-seoul-red transition-colors"><i class="fa-solid fa-house text-[1.1rem] mb-1"></i><span class="text-[9px] font-bold">홈</span></button>
@@ -1022,6 +1098,67 @@
                 setTimeout(() => noticeModal.classList.add('hidden'), 300);
             }
         }
+
+
+        // 글씨 크기 조절: 즉시 반영 + 기기별 저장
+        const FONT_SCALE_STORAGE_KEY = 'teacherWorkshopFontScale';
+        const FONT_PANEL_STORAGE_KEY = 'teacherWorkshopFontPanelOpen';
+        const MIN_FONT_SCALE = 0.9;
+        const MAX_FONT_SCALE = 1.4;
+
+        function normalizeFontScale(scale) {
+            const parsed = Number(scale);
+            if (!Number.isFinite(parsed)) return 1;
+            return Math.min(MAX_FONT_SCALE, Math.max(MIN_FONT_SCALE, Math.round(parsed * 100) / 100));
+        }
+
+        function applyFontScale(scale) {
+            const nextScale = normalizeFontScale(scale);
+            document.documentElement.style.setProperty('--app-font-scale', String(nextScale));
+            document.body.setAttribute('data-font-scale', String(nextScale));
+            localStorage.setItem(FONT_SCALE_STORAGE_KEY, String(nextScale));
+
+            const percent = Math.round(nextScale * 100);
+            const range = document.getElementById('font-size-range');
+            const value = document.getElementById('font-size-value');
+            if (range) range.value = String(percent);
+            if (value) value.textContent = percent + '%';
+        }
+
+        window.setFontScalePercent = function(percent) {
+            applyFontScale(Number(percent) / 100);
+        };
+
+        window.changeFontScale = function(delta) {
+            const current = normalizeFontScale(localStorage.getItem(FONT_SCALE_STORAGE_KEY) || 1);
+            applyFontScale(current + Number(delta));
+        };
+
+        window.resetFontScale = function() {
+            applyFontScale(1);
+        };
+
+        function applyFontSizeControlOpen(isOpen) {
+            const control = document.getElementById('font-size-control');
+            const toggle = document.getElementById('font-size-toggle');
+            if (!control) return;
+
+            control.classList.toggle('open', Boolean(isOpen));
+            localStorage.setItem(FONT_PANEL_STORAGE_KEY, Boolean(isOpen) ? 'true' : 'false');
+
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', Boolean(isOpen) ? 'true' : 'false');
+                toggle.setAttribute('aria-label', Boolean(isOpen) ? '글씨 크기 조절 패널 접기' : '글씨 크기 조절 패널 열기');
+            }
+        }
+
+        window.toggleFontSizeControl = function() {
+            const control = document.getElementById('font-size-control');
+            applyFontSizeControlOpen(!(control && control.classList.contains('open')));
+        };
+
+        applyFontScale(localStorage.getItem(FONT_SCALE_STORAGE_KEY) || 1);
+        applyFontSizeControlOpen(localStorage.getItem(FONT_PANEL_STORAGE_KEY) === 'true');
     </script>
 
     <!-- 클라우드 데이터 실시간 동기화 스크립트 -->
@@ -1030,7 +1167,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, addDoc, query, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 🌟 선생님의 실제 파이어베이스 설정값 (여기에 완벽히 복구했습니다!)
+        // 파이어베이스 설정값
         const firebaseConfig = {
             apiKey: "AIzaSyBpB10wDN8yfdCHKa3uSWKo03TQVF6BGaI",
             authDomain: "retreat-2026-ce30d.firebaseapp.com",
@@ -1064,7 +1201,6 @@
 
         function listenForUpdates() {
             if (!db) return;
-            // 공지사항 데이터 경로 (선생님 개인 DB에 맞춰 단순화)
             const settingsRef = doc(db, 'settings', 'notice');
             
             onSnapshot(settingsRef, (snapshot) => {
@@ -1091,7 +1227,6 @@
         function listenForParticipants() {
             if (!db) return;
             const teams = ['A팀', 'B팀', 'C그룹', 'D그룹'];
-            // 데이터 저장 경로 단순화
             const q = query(collection(db, 'participants'));
             
             onSnapshot(q, (snapshot) => {
@@ -1149,7 +1284,6 @@
                 });
             } catch(e) {
                 console.error("추가 실패:", e);
-                // 파이어베이스 보안 규칙 오류인지 확인
                 if (e.code === 'permission-denied') {
                     alert("⚠️ 파이어베이스 데이터베이스 쓰기 권한이 막혀있습니다!\n파이어베이스 콘솔 -> Firestore Database -> 'Rules(규칙)' 탭에서\nallow read, write: if true; 로 변경해주세요.");
                 } else {
