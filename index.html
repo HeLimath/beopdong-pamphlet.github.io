@@ -399,7 +399,7 @@
 
                                 <!-- A팀 -->
                                 <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm mt-3">
-                                    <h5 class="font-bold text-[14px] text-blue-600 mb-2.5 flex items-center"><i class="fa-solid fa-robot mr-1.5"></i>로봇 인공지능 과학관 투어</h5>
+                                    <h5 class="font-bold text-[14px] text-blue-600 mb-2.5 flex items-center"><i class="fa-solid fa-robot mr-1.5"></i>서울로봇인공지능과학관 투어</h5>
                                     <div class="text-xs text-gray-700 space-y-2 ml-1">
                                         <p class="flex items-center"><i class="fa-solid fa-flag text-blue-500 w-4 text-center mr-1"></i><strong>동행 리더:</strong> 신보라 선생님</p>
                                         <p class="flex items-start"><i class="fa-solid fa-bus text-blue-500 w-4 text-center mr-1 mt-0.5"></i><span class="leading-relaxed"><strong>이동 안내:</strong> 09:00 호텔 앞에서 버스 탑승 및 출발<br><span class="inline-block mt-1 bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 font-bold text-[11px]"><i class="fa-solid fa-taxi mr-1"></i>복귀 시 택시비 전액 지원</span></span></p>
@@ -480,7 +480,7 @@
                 <!-- A Group -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-seoul-line">
                     <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
-                        <h3 class="font-bold text-seoul-red text-[16px]"><i class="fa-solid fa-users mr-2 opacity-80"></i>로봇 인공지능 과학관 투어</h3>
+                        <h3 class="font-bold text-seoul-red text-[16px]"><i class="fa-solid fa-users mr-2 opacity-80"></i>서울 로봇인공지능과학관 투어</h3>
                         <span class="bg-[#FFF5F3] text-seoul-red text-[11px] font-bold px-2.5 py-1 rounded-full border border-orange-100 shadow-sm"><i class="fa-solid fa-crown mr-1 text-amber-500"></i>팀장: <span id="group-a-leader">신보라</span></span>
                     </div>
                     <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 mb-3 text-[12px] space-y-1.5">
@@ -1028,53 +1028,52 @@
     <!-- 클라우드 데이터 실시간 동기화 스크립트 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, collection, addDoc, query, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase 설정 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'beopdong-retreat-2026';
+        // 🌟 선생님의 실제 파이어베이스 설정값 (여기에 완벽히 복구했습니다!)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpB10wDN8yfdCHKa3uSWKo03TQVF6BGaI",
+            authDomain: "retreat-2026-ce30d.firebaseapp.com",
+            projectId: "retreat-2026-ce30d",
+            storageBucket: "retreat-2026-ce30d.firebasestorage.app",
+            messagingSenderId: "465178932210",
+            appId: "1:465178932210:web:bf26dffacdf6666144b16b"
+        };
 
         let app, auth, db;
         try {
-            if (Object.keys(firebaseConfig).length > 0) {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else { 
-                            await signInAnonymously(auth); 
-                        }
-                    } catch (e) { console.warn("인증 실패:", e); }
-                };
-                
-                initAuth();
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            // 앱 실행 시 자동으로 익명 로그인 처리
+            signInAnonymously(auth).catch((error) => {
+                console.error("인증 실패:", error);
+            });
 
-                // ⚠️ 권한 오류 방지: 인증이 완료된 후에만 데이터를 불러옵니다.
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        listenForUpdates();
-                        listenForParticipants();
-                    }
-                });
-            }
-        } catch(e) { console.warn("Firebase 연결 안됨"); }
+            // 인증이 완료된 후에만 데이터를 불러오도록 설정
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    listenForUpdates();
+                    listenForParticipants();
+                }
+            });
+        } catch(e) { 
+            console.error("Firebase 연결 안됨:", e); 
+        }
 
         function listenForUpdates() {
             if (!db) return;
-            const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'retreat_data', 'settings');
+            // 공지사항 데이터 경로 (선생님 개인 DB에 맞춰 단순화)
+            const settingsRef = doc(db, 'settings', 'notice');
             
             onSnapshot(settingsRef, (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.data();
-                    
-                    if (data.popup && data.popup.isActive) {
+                    if (data.isActive) {
                         const noticeModal = document.getElementById('notice-modal');
-                        document.getElementById('notice-text').innerText = data.popup.message;
+                        document.getElementById('notice-text').innerText = data.message;
                         noticeModal.classList.remove('hidden');
                         setTimeout(() => {
                             noticeModal.classList.remove('opacity-0');
@@ -1093,7 +1092,8 @@
         function listenForParticipants() {
             if (!db) return;
             const teams = ['A팀', 'B팀', 'C그룹', 'D그룹'];
-            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'participants'));
+            // 데이터 저장 경로 단순화
+            const q = query(collection(db, 'participants'));
             
             onSnapshot(q, (snapshot) => {
                 // 기존 목록 초기화
@@ -1129,13 +1129,20 @@
         // 이름 추가하기 (버튼 클릭 시 실행)
         window.addParticipant = async (team) => {
             const input = document.getElementById(`input-${team}`);
-            if (!input || !input.value.trim() || !auth.currentUser) return;
+            if (!input || !input.value.trim()) {
+                alert("이름을 입력해주세요.");
+                return;
+            }
+            if (!auth.currentUser) {
+                alert("서버에 연결 중입니다. 잠시 후 다시 시도해주세요.");
+                return;
+            }
             
             const name = input.value.trim();
             input.value = ''; // 입력창 즉시 비우기
             
             try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'participants'), {
+                await addDoc(collection(db, 'participants'), {
                     team: team,
                     name: name,
                     timestamp: Date.now(),
@@ -1143,7 +1150,12 @@
                 });
             } catch(e) {
                 console.error("추가 실패:", e);
-                alert("명단 추가에 실패했습니다.");
+                // 파이어베이스 보안 규칙 오류인지 확인
+                if (e.code === 'permission-denied') {
+                    alert("⚠️ 파이어베이스 데이터베이스 쓰기 권한이 막혀있습니다!\n파이어베이스 콘솔 -> Firestore Database -> 'Rules(규칙)' 탭에서\nallow read, write: if true; 로 변경해주세요.");
+                } else {
+                    alert("명단 추가에 실패했습니다.");
+                }
             }
         };
 
@@ -1151,9 +1163,10 @@
         window.deleteParticipant = async (id) => {
             if(!auth.currentUser) return;
             try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'participants', id));
+                await deleteDoc(doc(db, 'participants', id));
             } catch(e) {
                 console.error("삭제 실패:", e);
+                alert("삭제에 실패했습니다.");
             }
         };
     </script>
